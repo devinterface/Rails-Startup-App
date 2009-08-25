@@ -77,9 +77,7 @@ END
 #gem 'mislav-will_paginate', :lib => 'will_paginate',  :source => 'http://gems.github.com'
 #gem "binarylogic-searchlogic", :lib     => 'searchlogic', :source  => 'http://gems.github.com', :version => '~> 2.0'
 #plugin 'asset_packager', :git => 'git://github.com/sbecker/asset_packager.git'
-#plugin 'exception_notifier', :git => 'git://github.com/rails/exception_notification.git'
-
-#gem "cwninja-inaction_mailer", :lib => 'inaction_mailer/force_load', :source => 'http://gems.github.com', :env => 'development'
+#plugin 'exception_notifier', :git => 'git://github.com/rails/exception_notification.git'
 
 
 ## Javascript section
