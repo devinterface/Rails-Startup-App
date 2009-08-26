@@ -16,6 +16,10 @@ rescue
   exit!
 end
  
+def from_devinterface_repo(github_user, from, to = from.split("/").last)
+  download("http://github.com/#{github_user}/Rails-Startup-App/raw/master/#{from}", to)
+end
+ 
 def commit_state(comment)
   git :add => "."
   git :commit => "-am '#{comment}'"
@@ -69,22 +73,12 @@ END
 #generate("rspec")
 #generate("cucumber")
 
-## Potentially Useful 
-#gem 'activemerchant', :lib => 'active_merchant'
-#gem 'rubyist-aasm', :lib => "aasm", :source => "http://gems.github.com"
-#gem 'hpricot', :source => 'http://code.whytheluckystiff.net'
-#gem 'RedCloth', :lib => 'redcloth'
-#gem 'mislav-will_paginate', :lib => 'will_paginate',  :source => 'http://gems.github.com'
-#gem "binarylogic-searchlogic", :lib     => 'searchlogic', :source  => 'http://gems.github.com', :version => '~> 2.0'
-#plugin 'asset_packager', :git => 'git://github.com/sbecker/asset_packager.git'
-#plugin 'exception_notifier', :git => 'git://github.com/rails/exception_notification.git'
-
 
 ## Javascript section
 if yes?("Will this app use jQuery instead of Prototype? (y/n)")
   run "rm -f public/javascripts/*"
   run "touch public/javascripts/application.js"
-  download "http://jqueryjs.googlecode.com/svn/trunk/plugins/form/jquery.form.js","public/javascripts/jquery.form.js"
+  run "curl -s -L http://jqueryjs.googlecode.com/svn/trunk/plugins/form/jquery.form.js > public/javascripts/jquery.form.js"
   file_from_repo "ffmike", "jquery-validate", "master", "jquery.validate.min.js", "public/javascripts/jquery.validate.min.js"
   javascript_include_tags = '<%= javascript_include_tag "http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js", "http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js", "jquery.validate.min.js", "jquery.form.js", "application", :cache => true  %>'
 else
@@ -191,11 +185,13 @@ input#user_openid_identifier, input#user_session_openid_identifier {
   padding-left: 18px;
 }
 END
-
-commit_state "Base application with plugins, gems and BDD testing support"
+
+
+commit_state "Base application with plugins and gems and BDD testing support"
 
 
 # Installing common gems and plugins for authentication support
+puts "Setting up user authentication..." 
 rake('db:sessions:create')
 file "db/migrate/#{Time.now.to_i}_create_users.rb", <<-END
   class CreateUsers < ActiveRecord::Migration
@@ -260,396 +256,34 @@ end
 #  generate("roles", "Role User")
 #end
 
+## models and controllers
+from_devinterface_repo "devinterface", "auth/controllers/user_session.rb", "app/controllers/user_session.rb"
+from_devinterface_repo "devinterface", "auth/controllers/application_controller.rb", "app/controllers/application_controller.rb" 
 
 if not @use_openid
-file 'app/models/user.rb', <<-END
-class User < ActiveRecord::Base
-  acts_as_authentic
-end
-END
+from_devinterface_repo "devinterface", "auth/models/user.rb", "app/models/user.rb"
+from_devinterface_repo "devinterface", "auth/controllers/users_controller.rb", "app/controllers/users_controller.rb"
+from_devinterface_repo "devinterface", "auth/controllers/user_sessions_controller.rb", "appcontrollers/user_sessions_controller.rb"
 else
-file 'app/models/user.rb', <<-END
-class User < ActiveRecord::Base
-  acts_as_authentic do |c|
-    c.openid_required_fields = [:nickname, :email]
-  end
-
-  private
-
-  def map_openid_registration(registration)
-    self.email = registration["email"] if email.blank?
-    self.login = registration["nickname"] if login.blank?
-  end
-
-end
-END
+from_devinterface_repo "devinterface", "auth_openid/models/user.rb", "app/models/user.rb"
+from_devinterface_repo "devinterface", "auth_openid/controllers/users_controller.rb", "app/controllers/users_controller.rb"
+from_devinterface_repo "devinterface", "auth_openid/controllers/user_sessions_controller.rb", "appcontrollers/user_sessions_controller.rb"
 end
 
-file 'app/models/user_session.rb', <<-END
-class UserSession < Authlogic::Session::Base
-end
-END
 
-file 'app/controllers/application_controller.rb', <<-END
-class ApplicationController < ActionController::Base
-  helper :all
-  helper_method :current_user_session, :current_user
-  filter_parameter_logging :password, :password_confirmation
-  
-  private
-  def current_user_session
-    return @current_user_session if defined?(@current_user_session)
-    @current_user_session = UserSession.find
-  end
-  
-  def current_user
-    return @current_user if defined?(@current_user)
-    @current_user = current_user_session && current_user_session.record
-  end
-  
-  def require_user
-    unless current_user
-      store_location
-      flash[:notice] = "You must be logged in to access this page"
-      redirect_to new_user_session_url
-      return false
-    end
-  end
-
-  def require_no_user
-    if current_user
-      store_location
-      flash[:notice] = "You must be logged out to access this page"
-      redirect_to account_url
-      return false
-    end
-  end
-  
-  def store_location
-    session[:return_to] = request.request_uri
-  end
-  
-  def redirect_back_or_default(default)
-    redirect_to(session[:return_to] || default)
-    session[:return_to] = nil
-  end
-end
-END
+##views 
+from_devinterface_repo "devinterface", "auth/views/users/new.html.erb", "app/views/users/new.html.erb"
+from_devinterface_repo "devinterface", "auth/views/users/edit.html.erb","app/views/users/edit.html.erb"
+from_devinterface_repo "devinterface", "auth/views/users/show.html.erb", "app/views/users/show.html.erb"
 
 if not @use_openid
-file 'app/controllers/users_controller.rb', <<-END
-class UsersController < ApplicationController
-  before_filter :require_no_user, :only => [:new, :create]
-  before_filter :require_user, :only => [:show, :edit, :update]
-  
-  def new
-    @user = User.new
-  end
-  
-  def create
-    @user = User.new(params[:user])
-    if @user.save
-      flash[:notice] = "Account registered!"
-      redirect_back_or_default account_url
-    else
-      render :action => :new
-    end
-  end
-  
-  def show
-    @user = @current_user
-  end
-
-  def edit
-    @user = @current_user
-  end
-  
-  def update
-    @user = @current_user # makes our views "cleaner" and more consistent
-    if @user.update_attributes(params[:user])
-      flash[:notice] = "Account updated!"
-      redirect_to account_url
-    else
-      render :action => :edit
-    end
-  end
-end
-END
+from_devinterface_repo "devinterface", "auth/views/users/_form.html.erb", "app/views/users/_form.html.erb"
+from_devinterface_repo "devinterface", "auth/views/user_sessions/new.html.erb", "app/views/user_sessions/new.html.erb"
 else
-file 'app/controllers/users_controller.rb', <<-END
-class UsersController < ApplicationController
-  before_filter :require_no_user, :only => [:new, :create]
-  before_filter :require_user, :only => [:show, :edit, :update]
-  
-  def new
-    @user = User.new
-  end
-  
-  def create
-    @user = User.new(params[:user])
-    @user.save do |result|
-      if result
-        flash[:notice] = "Account registered!"
-        redirect_back_or_default account_url
-      else
-        render :action => 'new'
-      end
-    end
-  end
-  
-  def show
-    @user = @current_user
-  end
-
-  def edit
-    @user = @current_user
-  end
-  
-  def update
-    @user = @current_user
-    @user.attributes = params[:user]
-    @user.save do |result|
-      if result
-        flash[:notice] = "Account updated!"
-        redirect_to account_url
-      else
-        render :action => 'edit'
-      end
-    end
-  end
-end
-END
+from_devinterface_repo "devinterface", "auth_openid/views/users/_form.html.erb", "app/views/users/_form.html.erb"
+from_devinterface_repo "devinterface", "auth_openid/views/user_sessions/new.html.erb", "app/views/user_sessions/new.html.erb"
 end
 
-if not @use_openid
-file 'app/controllers/user_sessions_controller.rb', <<-END
-class UserSessionsController < ApplicationController
-  before_filter :require_no_user, :only => [:new, :create]
-  before_filter :require_user, :only => :destroy
-  
-  def new
-    @user_session = UserSession.new
-  end
-  
-  def create
-    @user_session = UserSession.new(params[:user_session])
-    if @user_session.save
-      flash[:notice] = "Login successful!"
-      redirect_back_or_default account_url
-    else
-      render :action => :new
-    end
-  end
-  
-  def destroy
-    current_user_session.destroy
-    flash[:notice] = "Logout successful!"
-    redirect_back_or_default new_user_session_url
-  end
-end
-END
-else  
-file 'app/controllers/user_sessions_controller.rb', <<-END
-class UserSessionsController < ApplicationController
-  before_filter :require_no_user, :only => [:new, :create]
-  before_filter :require_user, :only => :destroy
-  
-  def new
-    @user_session = UserSession.new
-  end
-  
-  def create
-    @user_session = UserSession.new(params[:user_session])
-    @user_session.save do |result|
-      if result
-        flash[:notice] = "Login successful!"
-        redirect_back_or_default account_url
-      else
-        render :action => 'new'
-      end
-    end
-  end
-  
-  def destroy
-    current_user_session.destroy
-    flash[:notice] = "Logout successful!"
-    redirect_back_or_default new_user_session_url
-  end
-end
-END
-end
-
-
-file 'app/views/users/new.html.erb', <<-END
-<fieldset>
-<legend>Register</legend>
-<% form_for @user, :url => account_path do |f| %>
-  <%= f.error_messages %>
-  <%= render :partial => "form", :object => f %>
-  <%= f.submit "Register" %>
-<% end %>
-</fieldset>
-END
-
-file 'app/views/users/edit.html.erb', <<-END
-<fieldset>
-<legend>Edit My Account</legend>
-<% form_for @user, :url => account_path do |f| %>
-  <%= f.error_messages %>
-  <%= render :partial => "form", :object => f %>
-  <%= f.submit "Update" %>
-<% end %>
-</fieldset>
-<br />
-<%= link_to "My Profile", account_path %>
-END
-
-file 'app/views/users/show.html.erb', <<-END
-<p>
-  <b>Login:</b>
-  <%=h @user.login %>
-</p>
-
-<p>
-  <b>Email:</b>
-  <%=h @user.email %>
-</p>
-
-<p>
-  <b>Login count:</b>
-  <%=h @user.login_count %>
-</p>
-
-<p>
-  <b>Last request at:</b>
-  <%=h @user.last_request_at %>
-</p>
-
-<p>
-  <b>Last login at:</b>
-  <%=h @user.last_login_at %>
-</p>
-
-<p>
-  <b>Current login at:</b>
-  <%=h @user.current_login_at %>
-</p>
-
-<p>
-  <b>Last login ip:</b>
-  <%=h @user.last_login_ip %>
-</p>
-
-<p>
-  <b>Current login ip:</b>
-  <%=h @user.current_login_ip %>
-</p>
-
-
-<%= link_to 'Edit', edit_account_path %>
-END
-
-if not @use_openid
-file 'app/views/users/_form.html.erb', <<-END
-<p>
-<%= form.label :login %><br />
-<%= form.text_field :login %>
-</p>
-<p>
-<%= form.label :email %><br />
-<%= form.text_field :email %>
-</p>
-<p>
-<%= form.label :password, form.object.new_record? ? nil : "Change password" %><br />
-<%= form.password_field :password %>
-</p>
-<p>
-<%= form.label :password_confirmation %><br />
-<%= form.password_field :password_confirmation %>
-</p>
-END
-else
-file 'app/views/users/_form.html.erb', <<-END
-<p>
-<%= form.label :login %><br />
-<%= form.text_field :login %>
-</p>
-<p>
-<%= form.label :email %><br />
-<%= form.text_field :email %>
-</p>
-<% if @user.openid_identifier.blank? %>
-<p>
-<%= form.label :password, form.object.new_record? ? nil : "Change password" %><br />
-<%= form.password_field :password %>
-</p>
-<p>
-<%= form.label :password_confirmation %><br />
-<%= form.password_field :password_confirmation %>
-</p>
-<h2>Or use OpenID</h2>
-<% end %>
-<p>
-  <%= form.label :openid_identifier, "OpenID URL" %><br />
-  <%= form.text_field :openid_identifier %>
-</p>
-END
-end
-
-if not @use_openid
-file 'app/views/user_sessions/new.html.erb', <<-END
-<fieldset>
-    <legend>Login</legend>
-<% form_for @user_session, :url => user_session_path do |f| %>
-  <%= f.error_messages %>
-  <p>
-  <%= f.label :login %><br />
-  <%= f.text_field :login %>
-  </p>
-  <p>
-  <%= f.label :password %><br />
-  <%= f.password_field :password %>
-  </p>
-  <p>
-  <%= f.check_box :remember_me %><%= f.label :remember_me %>
-  </p>
-  <p>
-  <%= f.submit "Login" %>
-  </p>
-<% end %>
-</fieldset>
-<%= link_to "signup", signup_url  %>
-END
-else
-file 'app/views/user_sessions/new.html.erb', <<-END
-<fieldset>
-    <legend>Login</legend>
-<% form_for @user_session, :url => user_session_path do |f| %>
-  <%= f.error_messages %>
-  <p>
-  <%= f.label :login %><br />
-  <%= f.text_field :login %>
-  </p>
-  <p>
-  <%= f.label :password %><br />
-  <%= f.password_field :password %>
-  </p>
-  <h2>Or use OpenID</h2>
-  <p>
-    <%= f.label :openid_identifier, "OpenID URL" %><br />
-    <%= f.text_field :openid_identifier %>
-  </p>
-  <p>
-  <%= f.check_box :remember_me %><%= f.label :remember_me %>
-  </p>
-  <p>
-  <%= f.submit "Login" %>
-  </p>
-<% end %>
-</fieldset>
-<%= link_to "signup", signup_url  %>
-END
-end
 
 file 'config/routes.rb', <<-END
 ActionController::Routing::Routes.draw do |map|
@@ -666,13 +300,26 @@ END
 
 commit_state "Added authentication support"
 
-## tags
+# tags
 if yes?("Do you want tags in #{current_app_name}? (y/n)")
   puts "Setting up tagging table..."
   plugin 'acts_as_taggable_redux', :git => 'git://github.com/geemus/acts_as_taggable_redux.git'
   rake('acts_as_taggable:db:create')
   commit_state "Added taggings support"
 end
+
+## Potentially Useful 
+#if yes?("Do you want other useful gems/plugins into #{current_app_name}? (y/n)")
+#gem 'activemerchant', :lib => 'active_merchant'
+#gem 'rubyist-aasm', :lib => "aasm", :source => "http://gems.github.com"
+#gem 'hpricot', :source => 'http://code.whytheluckystiff.net'
+#gem 'RedCloth', :lib => 'redcloth'
+#gem 'mislav-will_paginate', :lib => 'will_paginate',  :source => 'http://gems.github.com'
+#gem "binarylogic-searchlogic", :lib     => 'searchlogic', :source  => 'http://gems.github.com', :version => '~> 2.0'
+#gem "ryanb-nifty-generators", :lib     => 'ryanb-nifty-generators', :source  => 'http://gems.github.com'
+#plugin 'asset_packager', :git => 'git://github.com/sbecker/asset_packager.git'
+#plugin 'exception_notifier', :git => 'git://github.com/rails/exception_notification.git'
+#end
 
 rake('gems:install')
 
