@@ -257,17 +257,17 @@ end
 #end
 
 ## models and controllers
-from_devinterface_repo "devinterface", "auth/controllers/user_session.rb", "app/controllers/user_session.rb"
+from_devinterface_repo "devinterface", "auth/models/user_session.rb", "app/models/user_session.rb"
 from_devinterface_repo "devinterface", "auth/controllers/application_controller.rb", "app/controllers/application_controller.rb" 
 
 if not @use_openid
 from_devinterface_repo "devinterface", "auth/models/user.rb", "app/models/user.rb"
 from_devinterface_repo "devinterface", "auth/controllers/users_controller.rb", "app/controllers/users_controller.rb"
-from_devinterface_repo "devinterface", "auth/controllers/user_sessions_controller.rb", "appcontrollers/user_sessions_controller.rb"
+from_devinterface_repo "devinterface", "auth/controllers/user_sessions_controller.rb", "app/controllers/user_sessions_controller.rb"
 else
 from_devinterface_repo "devinterface", "auth_openid/models/user.rb", "app/models/user.rb"
 from_devinterface_repo "devinterface", "auth_openid/controllers/users_controller.rb", "app/controllers/users_controller.rb"
-from_devinterface_repo "devinterface", "auth_openid/controllers/user_sessions_controller.rb", "appcontrollers/user_sessions_controller.rb"
+from_devinterface_repo "devinterface", "auth_openid/controllers/user_sessions_controller.rb", "app/controllers/user_sessions_controller.rb"
 end
 
 
