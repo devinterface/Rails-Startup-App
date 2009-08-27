@@ -1,0 +1,31 @@
+h1. Rails Startup Template
+
+This template lets you to create quickly new Rails applications using Rails 2.3. To use it, just specify the -m switch when creating a Rails application:
+
+<pre><code>
+rails new_app_name -m http://github.com/devinterface/Rails-Startup-App/raw/master/rails_startup.rb
+</code></pre>
+
+h2. Generated Application
+
+Here’s a list of what this template sets up:
+
+h3. SCM
+* git repository
+
+h3. Javascript
+* Choice of prototype or jquery
+* "live-validations":http://wiki.github.com/augustl/live-validations for client-side JavaScript data entry validation.
+
+h3. CSS
+* Blueprint as css framework
+
+h3. Rails
+* Choice of Authlogic with or without OpenID support (includes models, controllers and views)
+
+h3. Testing
+* Testing support using RSpec, Cucumber and FactoryGirl
+
+h3. Other
+* Some other useful gems/plugins 
+
