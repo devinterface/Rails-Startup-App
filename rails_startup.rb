@@ -73,17 +73,14 @@ END
 #generate("rspec")
 #generate("cucumber")
 
-
 ## Javascript section
 if yes?("Will this app use jQuery instead of Prototype? (y/n)")
   run "rm -f public/javascripts/*"
   run "touch public/javascripts/application.js"
   run "curl -s -L http://jqueryjs.googlecode.com/svn/trunk/plugins/form/jquery.form.js > public/javascripts/jquery.form.js"
-  file_from_repo "ffmike", "jquery-validate", "master", "jquery.validate.min.js", "public/javascripts/jquery.validate.min.js"
-  javascript_include_tags = '<%= javascript_include_tag "http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js", "http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js", "jquery.validate.min.js", "jquery.form.js", "application", :cache => true  %>'
+  javascript_include_tags = '<%= javascript_include_tag "http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js", "http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js", "jquery.form.js", "application", :cache => true  %>'
 else
-  download "http://livevalidation.com/javascripts/src/1.3/livevalidation_prototype.js", "public/javascripts/livevalidation.js"
-  javascript_include_tags = '<%= javascript_include_tag :defaults, "livevalidation", :cache => true %>'
+  javascript_include_tags = '<%= javascript_include_tag :defaults, :cache => true %>'
 end
 
 ##CSS section
@@ -320,6 +317,224 @@ end
 #plugin 'asset_packager', :git => 'git://github.com/sbecker/asset_packager.git'
 #plugin 'exception_notifier', :git => 'git://github.com/rails/exception_notification.git'
 #end
+
+# development only inaction_mailer
+gem "cwninja-inaction_mailer", 
+  :lib => 'inaction_mailer/force_load', 
+  :source => 'http://gems.github.com', 
+  :env => 'development'
+
+# rakefile for use with inaction_mailer
+rakefile 'mail.rake', <<-END
+namespace :mail do
+  desc "Remove all files from tmp/sent_mails"
+  task :clear do
+    FileList["tmp/sent_mails/*"].each do |mail_file|
+      File.delete(mail_file)
+    end
+  end
+end
+END
+
+# initializers
+initializer 'requires.rb', <<-END
+Dir[File.join(RAILS_ROOT, 'lib', '*.rb')].each do |f|
+  require f
+end
+END
+
+
+initializer 'mail.rb', <<-END
+ActionMailer::Base.delivery_method = :smtp
+ActionMailer::Base.smtp_settings = {
+  :address => "111.111.111.111",
+  :port => 25,
+  :domain => "example.com",
+  :authentication => :login,
+  :user_name => "devinterface@example.com",
+  :password => "password"  
+}
+END
+
+
+
+commit_state "initializers"
+
+
+
+# database
+database = ask("Witch database support #{current_app_name} will use? [mysql] [postgres] [sqlite (default)] ")
+
+case database
+when "mysql"
+  db_username = ask("Please enter the development database username")
+  db_password = ask("Please enter the development database password")
+  file 'config/database.yml', <<-END  
+# MySQL. Versions 4.1 and 5.0 are recommended.
+#
+# Install the MySQL driver:
+# gem install mysql
+# On Mac OS X:
+# sudo gem install mysql -- --with-mysql-dir=/usr/local/mysql
+# On Mac OS X Leopard:
+# sudo env ARCHFLAGS="-arch i386" gem install mysql -- --with-mysql-config=/usr/local/mysql/bin/mysql_config
+# This sets the ARCHFLAGS environment variable to your native architecture
+# On Windows:
+# gem install mysql
+# Choose the win32 build.
+# Install MySQL and put its /bin directory on your path.
+#
+# And be sure to use new-style password hashing:
+# http://dev.mysql.com/doc/refman/5.0/en/old-client.html
+
+development:
+  adapter: mysql
+  encoding: utf8
+  reconnect: false
+  database: #{current_app_name}_development
+  pool: 5
+  username: #{db_username}
+  password: #{db_password}
+  #socket: /tmp/mysql.sock
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test: &TEST
+  adapter: mysql
+  encoding: utf8
+  reconnect: false
+  database: #{current_app_name}_test<%= ENV['TEST_ENV_NUMBER'] %>
+  pool: 5
+  username: root
+  password:
+  socket: /tmp/mysql.sock
+
+production:
+  adapter: mysql
+  encoding: utf8
+  database: #{current_app_name}_production
+  pool: 5
+  username: root
+  password:
+  socket: /tmp/mysql.sock
+
+staging:
+  adapter: mysql
+  encoding: utf8
+  database: #{current_app_name}_staging
+  pool: 5
+  username: root
+  password:
+  socket: /tmp/mysql.sock
+
+cucumber:
+ <<: *TEST
+END
+when "postgresql"
+  db_username = ask("Please enter the development database username")
+  db_password = ask("Please enter the development database password")
+  file 'config/database.yml', <<-END
+# PostgreSQL. Versions 7.4 and 8.x are supported.
+#
+# Install the ruby-postgres driver:
+#   gem install ruby-postgres
+# On Mac OS X:
+#   gem install ruby-postgres -- --include=/usr/local/pgsql
+# On Windows:
+#   gem install ruby-postgres
+#       Choose the win32 build.
+#       Install PostgreSQL and put its /bin directory on your path.
+development:
+  adapter: postgresql
+  encoding: unicode
+  database: #{current_app_name}_development
+  pool: 5
+  username: #{db_username}
+  password: #{db_password}
+
+  # Connect on a TCP socket. Omitted by default since the client uses a
+  # domain socket that doesn't need configuration. Windows does not have
+  # domain sockets, so uncomment these lines.
+  #host: localhost
+  #port: 5432
+
+  # Schema search path. The server defaults to $user,public
+  #schema_search_path: myapp,sharedapp,public
+
+  # Minimum log levels, in increasing order:
+  #   debug5, debug4, debug3, debug2, debug1,
+  #   log, notice, warning, error, fatal, and panic
+  # The server defaults to notice.
+  #min_messages: warning
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test: &TEST
+  adapter: postgresql
+  encoding: unicode
+  database: #{current_app_name}_test<%= ENV['TEST_ENV_NUMBER'] %>
+  pool: 5
+  username: postgres
+  password:
+
+production:
+  adapter: postgresql
+  encoding: unicode
+  database: #{current_app_name}_production
+  pool: 5
+  username: postgres
+  password: 99Schema@
+
+staging:
+  adapter: postgresql
+  encoding: unicode
+  database: #{current_app_name}_staging
+  pool: 5
+  username: postgres
+  password: 99Schema@
+
+cucumber:
+ <<: *TEST
+END
+else # "sqlite"
+  file 'config/database.yml', <<-END
+# SQLite version 3.x
+#   gem install sqlite3-ruby (not necessary on OS X Leopard)
+development:
+  adapter: sqlite3
+  database: db/development.sqlite3
+  pool: 5
+  timeout: 5000
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test: &TEST
+  adapter: sqlite3
+  database: db/test<%= ENV['TEST_ENV_NUMBER'] %>.sqlite3
+  pool: 5
+  timeout: 5000
+
+production:
+  adapter: sqlite3
+  database: db/production.sqlite3
+  pool: 5
+  timeout: 5000
+
+staging:
+  adapter: sqlite3
+  database: db/staging.sqlite3
+  pool: 5
+  timeout: 5000
+
+cucumber:
+ <<: *TEST
+END
+end
+
+commit_state "added database support"
 
 rake('gems:install')
 

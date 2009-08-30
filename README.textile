@@ -8,24 +8,32 @@ rails new_app_name -m http://github.com/devinterface/Rails-Startup-App/raw/maste
 
 h2. Generated Application
 
-Here’s a list of what this template sets up:
+Here's a list of what this template sets up:
 
 h3. SCM
 * git repository
 
 h3. Javascript
-* Choice of prototype or jquery
-* "live-validations":http://wiki.github.com/augustl/live-validations for client-side JavaScript data entry validation.
+* Choice of "Prototype":http://www.prototypejs.org or "jQuery":http://jquery.com
 
 h3. CSS
-* Blueprint as css framework
+* "Blueprint":http://github.com/joshuaclayton/blueprint-css/tree/master as css framework
 
 h3. Rails
-* Choice of Authlogic with or without OpenID support (includes models, controllers and views)
+* Choice of "Authlogic":http://github.com/binarylogic/authlogic/tree/master with or without "OpenID":http://github.com/binarylogic/authlogic_openid/tree/master support (includes models, controllers and views)
 
 h3. Testing
-* Testing support using RSpec, Cucumber and FactoryGirl
+* DBB testing support using "RSpec":http://github.com/dchelimsky/rspec/tree/master, "Cucumber":http://github.com/aslakhellesoy/cucumber/tree/master, and "FactoryGirl":http://github.com/thoughtbot/factory_girl/tree/master
 
 h3. Other
-* Some other useful gems/plugins 
+Some other useful gems/plugins such as:
+
+* "Hpricot":http://github.com/whymirror/hpricot/tree/master
+* "RedCloth":http://redcloth.org
+* "Will Paginate":http://github.com/mislav/will_paginate/tree/master
+* "SearchLogic":http://github.com/binarylogic/searchlogic/tree/master
+* "Nifty Generators":http://github.com/ryanb/nifty-generators/tree/master
+* "Asset Packager":http://github.com/sbecker/asset_packager/tree/master
+* "Exception Notifier":http://github.com/rails/exception_notification/tree/master
+
 
