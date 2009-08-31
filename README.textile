@@ -35,5 +35,3 @@ Some other useful gems/plugins such as:
 * "Nifty Generators":http://github.com/ryanb/nifty-generators/tree/master
 * "Asset Packager":http://github.com/sbecker/asset_packager/tree/master
 * "Exception Notifier":http://github.com/rails/exception_notification/tree/master
-
-

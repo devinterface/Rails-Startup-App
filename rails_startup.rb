@@ -372,7 +372,7 @@ puts "##########################################"
 # Installing common gems and plugins for authentication support
 puts "Setting up user authentication..." 
 rake('db:sessions:create')
-file "db/migrate/#{Time.now.to_i}_create_users.rb", <<-END
+file "db/migrate/001_create_users.rb", <<-END
   class CreateUsers < ActiveRecord::Migration
     def self.up
       create_table :users do |t|
@@ -407,7 +407,7 @@ if yes?("Will #{current_app_name} have Open ID authentication support? (y/n)")
   plugin 'openid_authentication plugin', :git => 'git://github.com/rails/open_id_authentication.git'
   gem 'authlogic-oid', :lib => "authlogic_openid", :source => "http://gems.github.com"
   gem 'ruby-openid', :lib => 'openid'
-  file "db/migrate/#{Time.now.to_i}_add_users_openid_field.rb", <<-END
+  file "db/migrate/002_add_users_openid_field.rb", <<-END
 class AddUsersOpenidField < ActiveRecord::Migration
   def self.up
     add_column :users, :openid_identifier, :string
@@ -479,17 +479,17 @@ puts "  Useful gems/plugins and initializers"
 puts "##########################################"
 
 ## Potentially Useful 
-#if yes?("Do you want other useful gems/plugins into #{current_app_name}? (y/n)")
-#gem 'activemerchant', :lib => 'active_merchant'
-#gem 'rubyist-aasm', :lib => "aasm", :source => "http://gems.github.com"
-#gem 'hpricot', :source => 'http://code.whytheluckystiff.net'
-#gem 'RedCloth', :lib => 'redcloth'
-#gem 'mislav-will_paginate', :lib => 'will_paginate',  :source => 'http://gems.github.com'
-#gem "binarylogic-searchlogic", :lib     => 'searchlogic', :source  => 'http://gems.github.com', :version => '~> 2.0'
-#gem "ryanb-nifty-generators", :lib     => 'ryanb-nifty-generators', :source  => 'http://gems.github.com'
-#plugin 'asset_packager', :git => 'git://github.com/sbecker/asset_packager.git'
-#plugin 'exception_notifier', :git => 'git://github.com/rails/exception_notification.git'
-#end
+if yes?("Do you want other useful gems/plugins into #{current_app_name}? (y/n)")
+  #gem 'activemerchant', :lib => 'active_merchant'
+  #gem 'rubyist-aasm', :lib => "aasm", :source => "http://gems.github.com"
+  gem 'hpricot', :source => 'http://code.whytheluckystiff.net'
+  gem 'RedCloth', :lib => 'redcloth'
+  gem 'mislav-will_paginate', :lib => 'will_paginate',  :source => 'http://gems.github.com'
+  gem "binarylogic-searchlogic", :lib => 'searchlogic', :source => 'http://gems.github.com', :version => '~> 2.0'
+  gem "ryanb-nifty-generators", :lib => 'ryanb-nifty-generators', :source => 'http://gems.github.com'
+  plugin 'asset_packager', :git => 'git://github.com/sbecker/asset_packager.git'
+  plugin 'exception_notifier', :git => 'git://github.com/rails/exception_notification.git'
+end
 
 # development only inaction_mailer
 gem "cwninja-inaction_mailer", 
