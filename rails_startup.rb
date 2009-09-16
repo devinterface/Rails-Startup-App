@@ -424,7 +424,7 @@ end
 END
 end
 
-gem 'authlogic', :lib => "authlogic", :source => "http://gems.github.com"
+gem 'binarylogic-authlogic', :lib => "authlogic", :source => "http://gems.github.com"
 if @use_openid
   rake('open_id_authentication:db:create')  
 end
