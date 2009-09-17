@@ -405,7 +405,7 @@ END
 if yes?("Will #{current_app_name} have Open ID authentication support? (y/n)") 
   @use_openid = true
   plugin 'openid_authentication plugin', :git => 'git://github.com/rails/open_id_authentication.git'
-  gem 'authlogic-oid', :lib => "authlogic_openid", :source => "http://gems.github.com"
+  gem 'binarylogic-authlogic_oid', :lib => "authlogic_openid", :source => "http://gems.github.com"
   gem 'ruby-openid', :lib => 'openid'
   file "db/migrate/002_add_users_openid_field.rb", <<-END
 class AddUsersOpenidField < ActiveRecord::Migration
@@ -560,15 +560,15 @@ gem 'thoughtbot-shoulda',
     :lib => 'shoulda', 
     :source => 'http://gems.github.com',
     :env => 'test'
-gem 'rpsec', 
+gem 'dchelimsky-rpsec', 
     :lib => 'rpsec', 
     :source => 'http://gems.github.com',
     :env => 'test'
-gem 'rspec-rails', 
+gem 'dchelimsky-rspec-rails', 
     :lib => 'rpsec-rails', 
     :source => 'http://gems.github.com',
     :env => 'test'
-gem 'cucumber', 
+gem 'aslakhellesoy-cucumber', 
     :lib => 'cucumber', 
     :source => 'http://gems.github.com',
     :env => 'test'

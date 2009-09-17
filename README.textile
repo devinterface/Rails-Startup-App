@@ -23,7 +23,7 @@ h3. Rails
 * Choice of "Authlogic":http://github.com/binarylogic/authlogic/tree/master with or without "OpenID":http://github.com/binarylogic/authlogic_openid/tree/master support (includes models, controllers and views)
 
 h3. Testing
-* DBB testing support using "RSpec":http://github.com/dchelimsky/rspec/tree/master, "Cucumber":http://github.com/aslakhellesoy/cucumber/tree/master, and "FactoryGirl":http://github.com/thoughtbot/factory_girl/tree/master
+* BDD testing support using "RSpec":http://github.com/dchelimsky/rspec/tree/master, "Cucumber":http://github.com/aslakhellesoy/cucumber/tree/master, and "FactoryGirl":http://github.com/thoughtbot/factory_girl/tree/master
 
 h3. Other
 Some other useful gems/plugins such as:
