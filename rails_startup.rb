@@ -560,12 +560,12 @@ gem 'thoughtbot-shoulda',
     :lib => 'shoulda', 
     :source => 'http://gems.github.com',
     :env => 'test'
-gem 'dchelimsky-rpsec', 
-    :lib => 'rpsec', 
+gem 'dchelimsky-rspec', 
+    :lib => 'rspec', 
     :source => 'http://gems.github.com',
     :env => 'test'
 gem 'dchelimsky-rspec-rails', 
-    :lib => 'rpsec-rails', 
+    :lib => 'rspec-rails', 
     :source => 'http://gems.github.com',
     :env => 'test'
 gem 'aslakhellesoy-cucumber', 
