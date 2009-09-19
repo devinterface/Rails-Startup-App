@@ -486,7 +486,6 @@ if yes?("Do you want other useful gems/plugins into #{current_app_name}? (y/n)")
   gem 'RedCloth', :lib => 'redcloth'
   gem 'mislav-will_paginate', :lib => 'will_paginate',  :source => 'http://gems.github.com'
   gem "binarylogic-searchlogic", :lib => 'searchlogic', :source => 'http://gems.github.com', :version => '~> 2.0'
-  gem "ryanb-nifty-generators", :lib => 'ryanb-nifty-generators', :source => 'http://gems.github.com'
   plugin 'asset_packager', :git => 'git://github.com/sbecker/asset_packager.git'
   plugin 'exception_notifier', :git => 'git://github.com/rails/exception_notification.git'
 end

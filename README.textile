@@ -32,6 +32,7 @@ Some other useful gems/plugins such as:
 * "RedCloth":http://redcloth.org
 * "Will Paginate":http://github.com/mislav/will_paginate/tree/master
 * "SearchLogic":http://github.com/binarylogic/searchlogic/tree/master
-* "Nifty Generators":http://github.com/ryanb/nifty-generators/tree/master
 * "Asset Packager":http://github.com/sbecker/asset_packager/tree/master
 * "Exception Notifier":http://github.com/rails/exception_notification/tree/master
+* "Inaction Mailer":http://github.com/cwninja/inaction_mailer/
+* "Acts As Taggable Redux":http://github.com/geemus/acts_as_taggable_redux
