@@ -481,20 +481,17 @@ puts "##########################################"
 ## Potentially Useful 
 if yes?("Do you want other useful gems/plugins into #{current_app_name}? (y/n)")
   #gem 'activemerchant', :lib => 'active_merchant'
-  #gem 'rubyist-aasm', :lib => "aasm", :source => "http://gems.github.com"
-  gem 'hpricot', :source => 'http://code.whytheluckystiff.net'
-  gem 'RedCloth', :lib => 'redcloth'
-  gem 'mislav-will_paginate', :lib => 'will_paginate',  :source => 'http://gems.github.com'
-  gem "binarylogic-searchlogic", :lib => 'searchlogic', :source => 'http://gems.github.com', :version => '~> 2.0'
-  plugin 'asset_packager', :git => 'git://github.com/sbecker/asset_packager.git'
-  plugin 'exception_notifier', :git => 'git://github.com/rails/exception_notification.git'
+  gem 'aasm', :source => "http://gemcutter.org"
+  gem 'hpricot', :source => "http://gemcutter.org"
+  gem 'bluecloth', :source => "http://gemcutter.org"
+  gem 'will_paginate', :source => "http://gemcutter.org"
+  gem "searchlogic", :source => "http://gemcutter.org"
+  plugin 'asset_packager', :source => "http://gemcutter.org"
+  plugin 'exception_notifier', :source => "http://gemcutter.org"
 end
 
 # development only inaction_mailer
-gem "cwninja-inaction_mailer", 
-  :lib => 'inaction_mailer/force_load', 
-  :source => 'http://gems.github.com', 
-  :env => 'development'
+gem "inaction_mailer",  :source => "http://gemcutter.org", :env => 'development'
 
 # rakefile for use with inaction_mailer
 rakefile 'mail.rake', <<-END
@@ -551,25 +548,25 @@ puts "  BDD support"
 puts "##########################################"
 
 ## BDD gems and plugins
-gem 'thoughtbot-factory_girl', 
+gem 'factory_girl', 
     :lib => 'factory_girl', 
-    :source => 'http://gems.github.com',
+    :source => "http://gemcutter.org",
     :env => 'test'
-gem 'thoughtbot-shoulda', 
+gem 'shoulda', 
     :lib => 'shoulda', 
-    :source => 'http://gems.github.com',
+    :source => "http://gemcutter.org",
     :env => 'test'
-gem 'dchelimsky-rspec', 
+gem 'rspec', 
     :lib => 'rspec', 
-    :source => 'http://gems.github.com',
+    :source => "http://gemcutter.org",
     :env => 'test'
-gem 'dchelimsky-rspec-rails', 
+gem 'rspec-rails', 
     :lib => 'rspec-rails', 
-    :source => 'http://gems.github.com',
+    :source => "http://gemcutter.org",
     :env => 'test'
-gem 'aslakhellesoy-cucumber', 
+gem 'cucumber', 
     :lib => 'cucumber', 
-    :source => 'http://gems.github.com',
+    :source => "http://gemcutter.org",
     :env => 'test'
 generate("rspec")
 generate("cucumber")
