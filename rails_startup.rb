@@ -486,6 +486,7 @@ if yes?("Do you want other useful gems/plugins into #{current_app_name}? (y/n)")
   gem 'bluecloth', :source => "http://gemcutter.org"
   gem 'will_paginate', :source => "http://gemcutter.org"
   gem "searchlogic", :source => "http://gemcutter.org"
+  #gem "metric_fu", :source => "http://gems.github.com" not yet moved to gemcutter
   plugin 'asset_packager', :source => "http://gemcutter.org"
   plugin 'exception_notifier', :source => "http://gemcutter.org"
 end
