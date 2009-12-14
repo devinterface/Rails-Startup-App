@@ -405,7 +405,7 @@ END
 if yes?("Will #{current_app_name} have Open ID authentication support? (y/n)") 
   @use_openid = true
   plugin 'openid_authentication plugin', :git => 'git://github.com/rails/open_id_authentication.git'
-  gem 'binarylogic-authlogic_oid', :lib => "authlogic_openid", :source => "http://gems.github.com"
+  gem 'authlogic-oid', :source => 'http://gemcutter.org'
   gem 'ruby-openid', :lib => 'openid'
   file "db/migrate/002_add_users_openid_field.rb", <<-END
 class AddUsersOpenidField < ActiveRecord::Migration
@@ -424,7 +424,7 @@ end
 END
 end
 
-gem 'binarylogic-authlogic', :lib => "authlogic", :source => "http://gems.github.com"
+gem 'authlogic', :source => 'http://gemcutter.org'
 if @use_openid
   rake('open_id_authentication:db:create')  
 end
