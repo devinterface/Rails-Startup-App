@@ -255,7 +255,9 @@ puts "##########################################"
 if yes?("Will this app use jQuery instead of Prototype? (y/n)")
   run "rm -f public/javascripts/*"
   run "touch public/javascripts/application.js"
-  run "curl -s -L http://jqueryjs.googlecode.com/svn/trunk/plugins/form/jquery.form.js > public/javascripts/jquery.form.js"
+  run "curl -s -L http://jquery.malsup.com/form/jquery.form.js?2.36 > public/javascripts/jquery.form.js"
+  run "curl -s -L http://jquery.malsup.com/form/jquery.form.js?2.36 > public/javascripts/jquery.form.js"
+  run "curl -s -L http://jquery.malsup.com/form/jquery.form.js?2.36 > public/javascripts/jquery.form.js"
   javascript_include_tags = '<%= javascript_include_tag "http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js", "http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js", "jquery.form.js", "application", :cache => true  %>'
 else
   javascript_include_tags = '<%= javascript_include_tag :defaults, :cache => true %>'
