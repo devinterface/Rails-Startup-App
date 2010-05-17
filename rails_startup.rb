@@ -73,12 +73,14 @@ puts "  Database support"
 puts "##########################################"
 
 # database
-database = ask("Witch database support #{current_app_name} will use? [mysql] [postgres] [sqlite (default)] ")
+database = ask("Which database support #{current_app_name} will use? [mysql] [postgres] [sqlite (default)] ")
 
 case database
 when "mysql"
   db_username = ask("Please enter the development database username")
   db_password = ask("Please enter the development database password")
+  db_host = ask("Please eneter the development database host (hit enter if using sockets)")
+  db_host_string = db_host.nil? ? "" : "host: #{db_host}"
   file 'config/database.yml', <<-END  
 # MySQL. Versions 4.1 and 5.0 are recommended.
 #
@@ -105,6 +107,7 @@ development:
   pool: 5
   username: #{db_username}
   password: #{db_password}
+  #{db_host_string}
   #socket: /tmp/mysql.sock
 
 # Warning: The database defined as "test" will be erased and
