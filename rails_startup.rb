@@ -247,6 +247,8 @@ cucumber:
 END
 end
 
+puts "Creating Databases..." 
+rake('db:create:all')
 commit_state "Database support"
 
 puts "##########################################"
